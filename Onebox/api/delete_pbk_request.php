@@ -13,6 +13,9 @@ try {
         exit;
     }
 
+    // Ambil role pengguna dari session
+    $role = strtolower($_SESSION['role'] ?? '');
+
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         echo json_encode(['success' => false, 'message' => 'Method not allowed']);
         exit;
@@ -36,12 +39,14 @@ try {
         exit;
     }
 
-    if ((int)$pbk['user_id'] !== (int)$_SESSION['user_id']) {
+    // Non-admin harus pemiliknya
+    if ($role !== 'admin' && (int)$pbk['user_id'] !== (int)$_SESSION['user_id']) {
         echo json_encode(['success' => false, 'message' => 'Anda tidak memiliki izin menghapus PBK ini']);
         exit;
     }
 
-    if (strcasecmp($pbk['status'], 'Pending') !== 0) {
+    // Non-admin hanya boleh hapus status Pending
+    if ($role !== 'admin' && strcasecmp($pbk['status'], 'Pending') !== 0) {
         echo json_encode(['success' => false, 'message' => 'Hanya PBK berstatus Pending yang bisa dihapus']);
         exit;
     }

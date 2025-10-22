@@ -421,6 +421,8 @@
                 return;
             }
             const role = (data.user?.role || '').toLowerCase();
+            // Simpan role untuk digunakan di aksi (view/delete)
+            window.currentUserRole = role;
             const allowed = role === 'admin' || role === 'user';
             if (!allowed) {
                 switch (role) {
@@ -586,10 +588,10 @@
                             <td>${item.request_date}</td>
                             <td>${item.line_name}</td>
                             <td>${item.machine_name}</td>
-                            <td>${item.problem_description.substring(0, 50)}...</td>
+                            <td>${(item.problem_description || '').substring(0, 50)}...</td>
                             <td><span class="badge ${statusClass}">${statusText}</span></td>
                             <td>
-                                <button class="btn btn-sm btn-info" onclick="viewPBK('${item.pbk_number}')">
+                                <button class="btn btn-sm btn-info" onclick="viewPBK(${item.id})">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 <button class="btn btn-sm btn-danger ms-1" onclick="confirmDeletePBK(${item.id}, '${item.pbk_number}', '${item.status}')">
@@ -610,18 +612,70 @@
             });
     }
     
-    function viewPBK(pbkNumber) {
-        // Implementation for viewing PBK details
-        Swal.fire({
-            title: 'Detail PBK',
-            text: `Menampilkan detail PBK: ${pbkNumber}`,
-            icon: 'info'
-        });
+    function viewPBK(pbkId) {
+        // Ambil detail PBK dari API dan tampilkan secara informatif
+        fetch('api/get_pbk_requests.php')
+            .then(r => r.json())
+            .then(res => {
+                if (!res.success) throw new Error(res.error || 'Failed');
+                const item = res.data.find(p => p.id == pbkId);
+                if (!item) {
+                    Swal.fire({ icon: 'error', title: 'PBK tidak ditemukan' });
+                    return;
+                }
+                const statusText = (item.status || '').toString();
+                const priorityText = item.priority || item.pengajuan || '-';
+                const what = item.what_problem || item.problem_description || '-';
+                const when = item.when_occurred || item.request_date || '-';
+                const where = item.where_location || item.line_name || '-';
+                const which = item.which_component || item.machine_name || '-';
+                const who = item.who_reported || item.user_name || item.created_by_username || '-';
+                const how = item.how_happened || '-';
+                const html = `
+                    <div class="container-fluid text-start">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="mb-2">Informasi Dasar</h6>
+                                <table class="table table-sm">
+                                    <tr><td><strong>PBK Number</strong></td><td>${item.pbk_number}</td></tr>
+                                    <tr><td><strong>Tanggal</strong></td><td>${new Date(item.request_date).toLocaleString()}</td></tr>
+                                    <tr><td><strong>Line</strong></td><td>${item.line_name}</td></tr>
+                                    <tr><td><strong>Mesin</strong></td><td>${item.machine_name}</td></tr>
+                                    <tr><td><strong>Status</strong></td><td>${statusText}</td></tr>
+                                    <tr><td><strong>Prioritas</strong></td><td>${priorityText}</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="mb-2">Detail 5W1H</h6>
+                                <table class="table table-sm">
+                                    <tr><td><strong>What</strong></td><td>${what}</td></tr>
+                                    <tr><td><strong>When</strong></td><td>${when}</td></tr>
+                                    <tr><td><strong>Where</strong></td><td>${where}</td></tr>
+                                    <tr><td><strong>Which</strong></td><td>${which}</td></tr>
+                                    <tr><td><strong>Who</strong></td><td>${who}</td></tr>
+                                    <tr><td><strong>How</strong></td><td>${how}</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>`;
+                Swal.fire({
+                    title: 'Detail PBK',
+                    html,
+                    width: 800,
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                });
+            })
+            .catch(err => {
+                console.error('View PBK error:', err);
+                Swal.fire({ icon: 'error', title: 'Gagal memuat detail PBK' });
+            });
     }
-
+    
     function confirmDeletePBK(pbkId, pbkNumber, status) {
         const normalized = (status || '').toLowerCase();
-        if (normalized !== 'pending') {
+        const isAdmin = (window.currentUserRole || '').toLowerCase() === 'admin';
+        if (!isAdmin && normalized !== 'pending') {
             Swal.fire({
                 title: 'Tidak bisa menghapus',
                 text: `PBK ${pbkNumber} berstatus ${status}. Hanya status Pending yang bisa dihapus.`,

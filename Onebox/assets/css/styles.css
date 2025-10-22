@@ -130,6 +130,42 @@ body {
     justify-content: center;
     color: #858796;
     box-shadow: inset 0 0 0 1px #eef2f7;
+    overflow: hidden;
 }
 
-/* Removed placeholder overlay to avoid blocking actual charts */
+/* Force remove any placeholder overlay text from external themes */
+.chart-area::before,
+.chart-area::after {
+    content: none !important;
+    display: none !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    z-index: -1 !important;
+}
+
+/* Ensure canvas sits above any pseudo-elements */
+.chart-area canvas {
+    position: relative;
+    z-index: 2;
+}
+
+/* New neutral container without any vendor overlays */
+.chart-container {
+    position: relative;
+    min-height: 280px;
+    padding: 12px;
+    background: #ffffff;
+    border-radius: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px #eef2f7;
+    overflow: hidden;
+}
+
+.chart-container canvas {
+    position: relative;
+    z-index: 2;
+}
