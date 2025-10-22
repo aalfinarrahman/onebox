@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Onebox Workspace</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-cogs me-2"></i>
+                Onebox Workspace
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span id="navUserName">Loading...</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Dashboard Overview</h2>
+                    <a href="index.html" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Kembali ke Menu
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <!-- PBK Statistics -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">PBK Pending</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="dashboardPendingPBK">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance In Progress -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Maintenance Active</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="dashboardActiveMaintenance">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-tools fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Low Stock -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Low Stock Items</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="dashboardLowStock">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spare Part Requests -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Spare Part Requests</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="dashboardSpareRequests">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row">
+            <!-- PBK Status Chart -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">PBK Status Overview</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="pbkStatusChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Recent Activities -->
+            <div class="col-xl-4 col-lg-5">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush" id="recentActivitiesList">
+                            <!-- Dynamic content will be loaded here -->
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-clock fa-2x mb-2"></i>
+                                <p>Tidak ada aktivitas terbaru</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Session Check -->
+    <script>
+    // Check if user is logged in and authorized for Dashboard (Admin only)
+    fetch('auth/check_session.php')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const role = (data.user?.role || '').toLowerCase();
+            const allowed = role === 'admin';
+            if (!allowed) {
+                switch (role) {
+                    case 'user':
+                        window.location.href = 'user-production.html';
+                        break;
+                    case 'maintenance':
+                        window.location.href = 'maintenance.html';
+                        break;
+                    case 'engineering':
+                        window.location.href = 'engineering-store.html';
+                        break;
+                    default:
+                        window.location.href = 'index.html';
+                        break;
+                }
+                return;
+            }
+            const navUserNameEl = document.getElementById('navUserName');
+            if (navUserNameEl) {
+                const displayName = data.user?.full_name || data.user?.username || 'Admin';
+                navUserNameEl.textContent = `${displayName} (${data.user?.role})`;
+            }
+        })
+        .catch(error => {
+            console.error('Session check failed:', error);
+            window.location.href = 'login.html';
+        });
+
+    // Initialize dashboard data
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDashboardData();
+        initializeChart();
+        loadRecentActivities();
+    });
+
+    // Ganti fungsi loadDashboardData() yang lama
+    function loadDashboardData() {
+    // Hapus data dummy ini:
+    // document.getElementById('dashboardPendingPBK').textContent = '5';
+    // document.getElementById('dashboardActiveMaintenance').textContent = '3';
+    // document.getElementById('dashboardLowStock').textContent = '12';
+    // document.getElementById('dashboardSpareRequests').textContent = '8';
+    
+    // Ganti dengan fetch real data:
+    fetch('api/dashboard_stats.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('dashboardPendingPBK').textContent = data.pending_pbk;
+                document.getElementById('dashboardActiveMaintenance').textContent = data.active_maintenance;
+                document.getElementById('dashboardLowStock').textContent = data.low_stock;
+                document.getElementById('dashboardSpareRequests').textContent = data.spare_requests;
+            } else {
+                console.error('Error loading dashboard stats:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching dashboard stats:', error);
+        });
+}
+
+function initializeChart() {
+    // Ganti data dummy chart dengan real data
+    fetch('api/pbk_chart_data.php')
+        .then(response => response.json())
+        .then(chartData => {
+            if (chartData.success) {
+                const ctx = document.getElementById('pbkStatusChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
+                        datasets: [{
+                            data: [
+                                chartData.data.pending,
+                                chartData.data.in_progress,
+                                chartData.data.completed,
+                                chartData.data.cancelled
+                            ],
+                            backgroundColor: [
+                                '#dc3545',
+                                '#ffc107', 
+                                '#28a745',
+                                '#6c757d'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching chart data:', error);
+        });
+}
+
+function loadRecentActivities() {
+    const container = document.getElementById('recentActivitiesList');
+    if (!container) return;
+
+    // Show loading state
+    container.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i>Loading...</div>';
+
+    fetch('api/recent_activities.php?limit=8')
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) throw new Error(data.error || 'Failed');
+
+            if (!data.data || data.data.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-clock fa-2x mb-2"></i><p>Tidak ada aktivitas terbaru</p></div>';
+                return;
+            }
+
+            const html = data.data.map(a => `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="${a.icon} me-2"></i>
+                        ${a.text || 'Aktivitas'}
+                        <small class="text-muted d-block">${formatTimeAgo(a.created_at)} • ${a.user || ''}</small>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+        })
+        .catch(err => {
+            console.error('Recent activities error:', err);
+            container.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-triangle-exclamation text-danger me-2"></i>Gagal memuat aktivitas</div>';
+        });
+}
+
+function formatTimeAgo(dateString) {
+    try {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (isNaN(diffMs)) return dateString;
+        if (diffMins < 1) return 'Baru saja';
+        if (diffMins < 60) return `${diffMins} menit lalu`;
+        if (diffHours < 24) return `${diffHours} jam lalu`;
+        return `${diffDays} hari lalu`;
+    } catch (e) {
+        return dateString;
+    }
+}
+    </script>
+</body>
+</html>
