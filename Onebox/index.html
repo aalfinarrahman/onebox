@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onebox - Workspace Menu</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-cogs me-2"></i>
+                    Onebox Workspace
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span id="navUserName">Loading...</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Workspace Selection -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="text-center mb-5">
+                    <h1 class="display-4 mb-3">Pilih Workspace</h1>
+                    <p class="lead text-muted">Silakan pilih workspace sesuai dengan peran Anda</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workspace Cards -->
+        <div class="row justify-content-center">
+            <!-- Dashboard -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm workspace-card" onclick="window.location.href='dashboard.html'">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-tachometer-alt fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Dashboard</h5>
+                        <p class="card-text text-muted">Overview sistem dan statistik</p>
+                        <a href="dashboard.html" class="btn btn-primary">Masuk Dashboard</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add User (Admin) -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm workspace-card" onclick="window.location.href='admin-add-user.html'">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-plus fa-4x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Add User</h5>
+                        <p class="card-text text-muted">Tambah pengguna baru (Admin)</p>
+                        <a href="admin-add-user.html" class="btn btn-primary">Masuk Add User</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Production -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm workspace-card" onclick="window.location.href='user-production.html'">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-users-cog fa-4x text-success"></i>
+                        </div>
+                        <h5 class="card-title">User Production</h5>
+                        <p class="card-text text-muted">Kelola PBK dan produksi</p>
+                        <a href="user-production.html" class="btn btn-success">Masuk Production</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm workspace-card" onclick="window.location.href='maintenance.html'">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-tools fa-4x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Maintenance</h5>
+                        <p class="card-text text-muted">Handle PBK dan maintenance</p>
+                        <a href="maintenance.html" class="btn btn-warning">Masuk Maintenance</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engineering Store -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm workspace-card" onclick="window.location.href='engineering-store.html'">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-store fa-4x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Engineering Store</h5>
+                        <p class="card-text text-muted">Kelola inventory dan spare part</p>
+                        <a href="engineering-store.html" class="btn btn-info">Masuk Store</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Session Check -->
+    <script>
+    // Check if user is logged in and set navbar user name
+    fetch('auth/check_session.php')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const el = document.getElementById('navUserName');
+            const role = (data.user?.role || '').toLowerCase();
+            if (el && data.user) {
+                const name = data.user.full_name || data.user.username || 'User';
+                el.textContent = `${name} (${(role || '').toUpperCase()})`;
+            }
+            // Hide workspace cards not allowed for this role
+            if (role && role !== 'admin') {
+                const allowedHref = role === 'user' ? 'user-production.html'
+                                  : role === 'maintenance' ? 'maintenance.html'
+                                  : role === 'engineering' ? 'engineering-store.html'
+                                  : '';
+                document.querySelectorAll('.workspace-card').forEach(card => {
+                    const link = card.querySelector('a[href]');
+                    const href = link ? link.getAttribute('href') : '';
+                    if (href !== allowedHref) {
+                        const col = card.closest('.col-lg-3, .col-md-6, .mb-4');
+                        if (col) col.style.display = 'none';
+                        else card.style.display = 'none';
+                    }
+                });
+            }
+        })
+        .catch(() => {
+            window.location.href = 'login.html';
+        });
+    </script>
+    
+    <style>
+    .workspace-card {
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+    .workspace-card:hover {
+        transform: translateY(-5px);
+    }
+    </style>
+</body>
+</html>

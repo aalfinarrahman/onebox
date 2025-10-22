@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Production - Onebox</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Kembali ke Workspace
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span id="navUserName">Loading...</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-users-cog me-2 text-success"></i>
+                            User Production Management
+                        </h1>
+                        <p class="text-muted mb-0">Kelola PBK (Permintaan Bantuan Kerusakan) dan produksi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    PBK Pending
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingPBK">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    PBK Completed
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="completedPBK">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Total PBK Bulan Ini
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthlyPBK">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Urgent PBK
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="urgentPBK">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <div class="col-12">
+                <!-- Tab Navigation -->
+                <ul class="nav nav-pills mb-4" id="productionTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="form-pbk-tab" data-bs-toggle="pill" data-bs-target="#form-pbk" type="button" role="tab">
+                            <i class="fas fa-plus-circle me-2"></i>Form PBK
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-pbk-tab" data-bs-toggle="pill" data-bs-target="#history-pbk" type="button" role="tab">
+                            <i class="fas fa-history me-2"></i>History PBK
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="productionTabsContent">
+                    <!-- Form PBK Tab -->
+                    <div class="tab-pane fade show active" id="form-pbk" role="tabpanel">
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-edit me-2"></i>
+                                    Form PBK (Permintaan Bantuan Kerusakan)
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <form id="pbkForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="line" class="form-label">
+                                                <i class="fas fa-industry me-1"></i>
+                                                Line *
+                                            </label>
+-                                            <select class="form-select" id="line" name="line" required>
+-                                                <option value="">Pilih Line</option>
+-                                                <option value="Line 1">Line 1</option>
+-                                                <option value="Line 2">Line 2</option>
+-                                                <option value="Line 3">Line 3</option>
+-                                                <option value="Line 4">Line 4</option>
+-                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="mesin" class="form-label">
+                                                <i class="fas fa-cogs me-1"></i>
+                                                Mesin *
+                                            </label>
+-                                            <select class="form-select" id="mesin" name="mesin" required>
+-                                                <option value="">Pilih Mesin</option>
+-                                                <option value="Volpack">Volpack</option>
+-                                                <option value="Edge Aligement">Edge Aligement</option>
+-                                                <option value="Romchi">Romchi</option>
+-                                                <option value="Bignose">Bignose</option>
+-                                                <option value="Zelda">Zelda</option>
+-                                                <option value="Nordenpack">Nordenpack</option>
+-                                                <option value="Posimat">Posimat</option>
+-                                                <option value="Wrapping">Wrapping</option>
+-                                            </select>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="unit" class="form-label">
+                                                <i class="fas fa-cube me-1"></i>
+                                                Unit *
+                                            </label>
+                                            <input type="text" class="form-control" id="unit" name="unit" placeholder="Unit/Bagian Mesin" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tanggal" class="form-label">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                Tanggal *
+                                            </label>
+                                            <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="shift" class="form-label">
+                                                <i class="fas fa-clock me-1"></i>
+                                                Shift *
+                                            </label>
+                                            <input type="text" class="form-control" id="shift" name="shift" placeholder="Isi shift (1/2/3)" list="shiftOptions" required>
+                                            <datalist id="shiftOptions">
+                                                <option value="1">Shift 1 (Pagi)</option>
+                                                <option value="2">Shift 2 (Siang)</option>
+                                                <option value="3">Shift 3 (Malam)</option>
+                                            </datalist>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="jam" class="form-label">
+                                                <i class="fas fa-clock me-1"></i>
+                                                Jam *
+                                            </label>
+                                            <input type="time" class="form-control" id="jam" name="jam" required>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tipeKerusakan" class="form-label">
+                                                <i class="fas fa-wrench me-1"></i>
+                                                Tipe Kerusakan *
+                                            </label>
+                                            <input type="text" class="form-control" id="tipeKerusakan" name="tipeKerusakan" placeholder="Isi tipe kerusakan" list="tipeKerusakanOptions" required>
+                                            <datalist id="tipeKerusakanOptions">
+                                                <option value="Mechanical">Mechanical</option>
+                                                <option value="Electrical">Electrical</option>
+                                                <option value="Pneumatic">Pneumatic</option>
+                                                <option value="Hydraulic">Hydraulic</option>
+                                                <option value="Software">Software</option>
+                                            </datalist>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="pengajuan" class="form-label">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                                Jenis Pengajuan *
+                                            </label>
+                                            <input type="text" class="form-control" id="pengajuan" name="pengajuan" placeholder="Isi jenis pengajuan" list="pengajuanOptions" required>
+                                            <datalist id="pengajuanOptions">
+                                                <option value="Emergency">Emergency</option>
+                                                <option value="Normal">Normal</option>
+                                                <option value="Preventive">Preventive</option>
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="mb-3">
+                                        <label for="deskripsi" class="form-label">
+                                            <i class="fas fa-file-alt me-1"></i>
+                                            Deskripsi Problem *
+                                        </label>
+                                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" placeholder="Jelaskan masalah yang terjadi secara detail..." required></textarea>
+                                    </div>
+                                
+                                    <!-- 5W1H Analysis -->
+                                    <div class="card mb-3">
+                                        <div class="card-header">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0">
+                                                    <i class="fas fa-search me-2"></i>
+                                                    Analisis 5W1H 
+                                                    <small class="text-muted">(Auto-filled dari data di atas)</small>
+                                                </h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="enableManualEdit">
+                                                    <label class="form-check-label" for="enableManualEdit">
+                                                        <small>Enable Manual Edit</small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="what" class="form-label">
+                                                        What (Apa yang terjadi?) 
+                                                        <small class="text-info">← dari Deskripsi Problem</small>
+                                                    </label>
+                                                    <textarea class="form-control" id="what" name="what" rows="2" 
+                                                             placeholder="Auto-filled dari deskripsi problem" readonly></textarea>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="when" class="form-label">
+                                                        When (Kapan terjadi?) 
+                                                        <small class="text-info">← dari Tanggal & Jam</small>
+                                                    </label>
+                                                    <input type="datetime-local" class="form-control" id="when" name="when" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="where" class="form-label">
+                                                        Where (Di mana terjadi?) 
+                                                        <small class="text-info">← dari Line</small>
+                                                    </label>
+                                                    <input type="text" class="form-control" id="where" name="where" 
+                                                           placeholder="Auto-filled dari line" readonly>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="who" class="form-label">
+                                                        Who (Siapa yang melaporkan?) 
+                                                        <small class="text-warning">← isi manual</small>
+                                                    </label>
+                                                    <input type="text" class="form-control" id="who" name="who" 
+                                                           placeholder="Nama pelapor" required>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="which" class="form-label">
+                                                        Which (Komponen mana?) 
+                                                        <small class="text-info">← dari Mesin</small>
+                                                    </label>
+                                                    <input type="text" class="form-control" id="which" name="which" 
+                                                           placeholder="Auto-filled dari mesin" readonly>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="how" class="form-label">
+                                                        How (Bagaimana terjadi?) 
+                                                        <small class="text-warning">← isi manual</small>
+                                                    </label>
+                                                    <textarea class="form-control" id="how" name="how" rows="2" 
+                                                             placeholder="Bagaimana masalah terjadi?" required></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="reset" class="btn btn-secondary me-md-2">
+                                            <i class="fas fa-undo me-2"></i>Reset
+                                        </button>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-paper-plane me-2"></i>Submit PBK
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History PBK Tab -->
+                    <div class="tab-pane fade" id="history-pbk" role="tabpanel">
+                        <div class="card shadow">
+                            <div class="card-header py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-history me-2"></i>
+                                        History PBK
+                                    </h6>
+                                    <div class="input-group" style="width: 300px;">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="searchHistory" placeholder="Cari history PBK...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="historyTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Tanggal</th>
+                                                <th>Line</th>
+                                                <th>Mesin</th>
+                                                <th>Problem</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="historyTableBody">
+                                            <!-- Data will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Empty State -->
+                                <div id="emptyState" class="text-center py-5" style="display: none;">
+                                    <i class="fas fa-inbox fa-3x text-gray-300 mb-3"></i>
+                                    <h5 class="text-gray-600">Belum ada data PBK</h5>
+                                    <p class="text-gray-500">Silakan buat PBK baru menggunakan form di tab sebelumnya</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom JS -->
+    <script src="assets/js/script.js"></script>
+    
+    <script>
+    // Check if user is logged in and authorized for User Production
+    fetch('auth/check_session.php')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const role = (data.user?.role || '').toLowerCase();
+            const allowed = role === 'admin' || role === 'user';
+            if (!allowed) {
+                switch (role) {
+                    case 'maintenance':
+                        window.location.href = 'maintenance.html';
+                        break;
+                    case 'engineering':
+                        window.location.href = 'engineering-store.html';
+                        break;
+                    default:
+                        window.location.href = 'index.html';
+                        break;
+                }
+                return;
+            }
+            const navUserNameEl = document.getElementById('navUserName');
+            if (navUserNameEl) {
+                const displayName = data.user?.full_name || data.user?.username || 'User';
+                navUserNameEl.textContent = `${displayName} (${data.user?.role})`;
+            }
+        })
+        .catch(error => {
+            console.error('Session check error:', error);
+            window.location.href = 'login.html';
+        });
+    
+    // Load user statistics
+    function loadUserStats() {
+        fetch('api/user_stats.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('pendingPBK').textContent = data.data.pending_pbk;
+                    document.getElementById('completedPBK').textContent = data.data.completed_pbk;
+                    document.getElementById('monthlyPBK').textContent = data.data.monthly_pbk;
+                    document.getElementById('urgentPBK').textContent = data.data.urgent_pbk;
+                } else {
+                    console.error('Error loading user stats:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user stats:', error);
+            });
+    }
+    
+    // Initialize User Production functionality
+    document.addEventListener('DOMContentLoaded', function() {
+    // Load statistics first
+    loadUserStats();
+    
+    initializeUserProduction();
+    });
+    
+    function initializeUserProduction() {
+        // Set default values
+        const today = new Date().toISOString().split('T')[0];
+        const now = new Date().toTimeString().split(' ')[0].substring(0, 5);
+        
+        document.getElementById('tanggal').value = today;
+        document.getElementById('jam').value = now;
+        
+        // Auto-fill 5W1H fields based on form inputs
+        setupAutoFill5W1H();
+        
+        // Form submission
+        const pbkForm = document.getElementById('pbkForm');
+        if (pbkForm) {
+            // Handler submit dipusatkan di assets/js/script.js untuk mencegah duplikasi.
+            // Duplikasi inline handler dihapus.
+        }
+        
+        // Load PBK History
+        loadPBKHistory();
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchHistory');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const tableRows = document.querySelectorAll('#historyTableBody tr');
+                
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+    }
+    
+    function setupAutoFill5W1H() {
+        // Auto-fill What from Deskripsi Problem
+        document.getElementById('deskripsi').addEventListener('input', function() {
+            document.getElementById('what').value = this.value;
+        });
+        
+        // Auto-fill Where from Line
+        document.getElementById('line').addEventListener('change', function() {
+            document.getElementById('where').value = this.value;
+        });
+        
+        // Auto-fill When from Tanggal and Jam
+        function updateWhen() {
+            const tanggal = document.getElementById('tanggal').value;
+            const jam = document.getElementById('jam').value;
+            
+            if (tanggal && jam) {
+                const whenValue = `${tanggal}T${jam}`;
+                document.getElementById('when').value = whenValue;
+            }
+        }
+        
+        document.getElementById('tanggal').addEventListener('change', updateWhen);
+        document.getElementById('jam').addEventListener('change', updateWhen);
+        
+        // Auto-fill Which from Mesin
+        document.getElementById('mesin').addEventListener('change', function() {
+            document.getElementById('which').value = this.value;
+        });
+        
+        // Toggle manual edit for auto-filled fields
+        document.getElementById('enableManualEdit').addEventListener('change', function() {
+            const autoFields = ['what', 'when', 'where', 'which'];
+            const isEnabled = this.checked;
+            
+            autoFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.readOnly = !isEnabled;
+                    
+                    if (isEnabled) {
+                        field.classList.add('border-warning');
+                        field.style.backgroundColor = '#fff3cd';
+                    } else {
+                        field.classList.remove('border-warning');
+                        field.style.backgroundColor = '';
+                    }
+                }
+            });
+        });
+        
+        // Initial auto-fill for When field
+        updateWhen();
+    }
+    
+    function loadPBKHistory() {
+        fetch('api/get_pbk_requests.php')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('historyTableBody');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (data.success && data.data.length > 0) {
+                    tbody.innerHTML = '';
+                    data.data.forEach(item => {
+                        const row = document.createElement('tr');
+                        const statusClass = (item.status === 'completed' || item.status === 'Completed') ? 'bg-success' : 
+                                       (item.status === 'in_progress' || item.status === 'In Progress') ? 'bg-warning' : 'bg-secondary';
+                        const statusText = (item.status === 'completed' || item.status === 'Completed') ? 'Completed' : 
+                                      (item.status === 'in_progress' || item.status === 'In Progress') ? 'In Progress' : 'Pending';
+                        
+                        row.innerHTML = `
+                            <td>${item.pbk_number}</td>
+                            <td>${item.request_date}</td>
+                            <td>${item.line_name}</td>
+                            <td>${item.machine_name}</td>
+                            <td>${item.problem_description.substring(0, 50)}...</td>
+                            <td><span class="badge ${statusClass}">${statusText}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="viewPBK('${item.pbk_number}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger ms-1" onclick="confirmDeletePBK(${item.id}, '${item.pbk_number}', '${item.status}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    emptyState.style.display = 'none';
+                } else {
+                    tbody.innerHTML = '';
+                    emptyState.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading history:', error);
+            });
+    }
+    
+    function viewPBK(pbkNumber) {
+        // Implementation for viewing PBK details
+        Swal.fire({
+            title: 'Detail PBK',
+            text: `Menampilkan detail PBK: ${pbkNumber}`,
+            icon: 'info'
+        });
+    }
+
+    function confirmDeletePBK(pbkId, pbkNumber, status) {
+        const normalized = (status || '').toLowerCase();
+        if (normalized !== 'pending') {
+            Swal.fire({
+                title: 'Tidak bisa menghapus',
+                text: `PBK ${pbkNumber} berstatus ${status}. Hanya status Pending yang bisa dihapus.`,
+                icon: 'warning'
+            });
+            return;
+        }
+        Swal.fire({
+            title: 'Hapus PBK?',
+            text: `PBK ${pbkNumber} akan dihapus permanen.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deletePBK(pbkId);
+            }
+        });
+    }
+
+    function deletePBK(pbkId) {
+        fetch('api/delete_pbk_request.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pbk_id: pbkId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: 'Terhapus',
+                    text: data.message || 'PBK berhasil dihapus',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                loadPBKHistory();
+            } else {
+                Swal.fire({
+                    title: 'Gagal menghapus',
+                    text: data.message || 'Terjadi kesalahan',
+                    icon: 'error'
+                });
+            }
+        })
+        .catch(err => {
+            console.error('Delete error:', err);
+            Swal.fire({
+                title: 'Gagal menghapus',
+                text: 'Terjadi error jaringan/server',
+                icon: 'error'
+            });
+        });
+    }
+    </script>
+</body>
+</html>
+                                            </div>
+                                            
+                                            <!-- Kode JavaScript yang salah tempat ini harus dihapus -->
+                                        </div>

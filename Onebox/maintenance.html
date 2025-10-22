@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance - Onebox</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <!-- HAPUS BARIS INI: <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Kembali ke Workspace
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span id="navUserName">Loading...</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-tools me-2 text-warning"></i>
+                            Maintenance Management - PBK Handler
+                        </h1>
+                        <p class="text-muted mb-0">Handle PBK dari User Production dan kelola maintenance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PBK Statistics -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Pending PBK
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingCount">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    In Progress
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="progressCount">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-cogs fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Completed
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="completedCount">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                    Rejected
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="rejectedCount">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-filter me-2"></i>
+                            Filter & Quick Actions
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label text-sm">Status</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label text-sm">Priority</label>
+                                <select class="form-select" id="priorityFilter">
+                                    <option value="">All Priority</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Urgent">Urgent</option>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Scheduled">Scheduled</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label text-sm">Line</label>
+                                <select class="form-select" id="lineFilter">
+                                    <option value="">All Lines</option>
+                                    <option value="Line 1">Line 1</option>
+                                    <option value="Line 2">Line 2</option>
+                                    <option value="Line 3">Line 3</option>
+                                    <option value="Line 4">Line 4</option>
+                                    <option value="Line 5">Line 5</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label text-sm">&nbsp;</label>
+                                <button class="btn btn-primary w-100 d-block" onclick="refreshPBKList()">
+                                    <i class="fas fa-sync me-2"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PBK List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-list me-2"></i>
+                                PBK dari User Production
+                            </h6>
+                            <div class="input-group" style="width: 300px;">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" placeholder="Search PBK..." id="searchMaintenancePBK">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="emptyMaintenanceState" class="text-center py-5">
+                            <i class="fas fa-clipboard-list fa-3x text-gray-300 mb-3"></i>
+                            <h5 class="text-gray-600">Belum ada PBK dari User Production</h5>
+                            <p class="text-gray-500">PBK yang dikirim dari User Production akan muncul di sini</p>
+                        </div>
+                        
+                        <div class="table-responsive" id="maintenanceTable" style="display: none;">
+                            <table class="table table-bordered" width="100%" cellspacing="0" id="maintenancePBKTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Tanggal</th>
+                                        <th>Line/Mesin</th>
+                                        <th>Tipe Kerusakan</th>
+                                        <th>Prioritas</th>
+                                        <th>Status</th>
+                                        <th>Pelapor</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="maintenancePBKBody">
+                                    <!-- Data akan ditambahkan secara dinamis -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spare Part Requests Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        My Spare Part Requests
+                    </h6>
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSparePartRequests()">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="sparePartRequestsTable">
+                            <thead>
+                                <tr>
+                                    <th>Request Number</th>
+                                    <th>Item Name</th>
+                                    <th>Quantity</th>
+                                    <th>Urgency</th>
+                                    <th>Status</th>
+                                    <th>Request Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sparePartRequestsTableBody">
+                                <!-- Data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noSparePartRequests" class="text-center py-4" style="display: none;">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Belum ada spare part request yang dibuat</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PBK Detail Modal for Maintenance -->
+    <div class="modal fade" id="maintenancePBKModal" tabindex="-1" aria-labelledby="maintenancePBKModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="maintenancePBKModalLabel">
+                        <i class="fas fa-tools me-2"></i>
+                        Detail PBK - Maintenance Action
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="maintenancePBKContent">
+                    <!-- PBK detail content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Close
+                    </button>
+                    <button type="button" class="btn btn-danger" id="rejectPBKBtn" onclick="rejectPBK()">
+                        <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                    <button type="button" class="btn btn-warning" id="requestSparePartBtn" onclick="requestSparePart()">
+                        <i class="fas fa-shopping-cart me-2"></i>Request Spare Part
+                    </button>
+                    <button type="button" class="btn btn-success" id="approvePBKBtn" onclick="approvePBK()">
+                        <i class="fas fa-check me-2"></i>Approve & Start Work
+                    </button>
+                    <button type="button" class="btn btn-primary" id="completePBKBtn" onclick="completePBK()" style="display: none;">
+                        <i class="fas fa-flag-checkered me-2"></i>Complete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Reason Modal -->
+    <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectReasonModalLabel">
+                        <i class="fas fa-times-circle me-2 text-danger"></i>
+                        Alasan Penolakan PBK
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="rejectForm">
+                        <div class="mb-3">
+                            <label for="rejectReason" class="form-label">
+                                <i class="fas fa-comment me-1"></i>
+                                Alasan Penolakan <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="rejectReason" name="rejectReason" rows="4" placeholder="Jelaskan alasan penolakan PBK ini..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rejectCategory" class="form-label">
+                                <i class="fas fa-tags me-1"></i>
+                                Kategori Penolakan
+                            </label>
+                            <select class="form-select" id="rejectCategory" name="rejectCategory">
+                                <option value="">Pilih Kategori</option>
+                                <option value="Informasi Tidak Lengkap">Informasi Tidak Lengkap</option>
+                                <option value="Bukan Tanggung Jawab Maintenance">Bukan Tanggung Jawab Maintenance</option>
+                                <option value="Duplikasi PBK">Duplikasi PBK</option>
+                                <option value="Masalah Sudah Teratasi">Masalah Sudah Teratasi</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="confirmRejectPBK()">
+                        <i class="fas fa-times me-2"></i>Confirm Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spare Part Request Modal -->
+    <div class="modal fade" id="sparePartModal" tabindex="-1" aria-labelledby="sparePartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sparePartModalLabel">
+                        <i class="fas fa-shopping-cart me-2 text-warning"></i>
+                        Request Spare Part ke Engineering Store
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sparePartForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="partName" class="form-label">
+                                    <i class="fas fa-cog me-1"></i>
+                                    Nama Spare Part <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="partName" name="partName" required>
+                                    <option value="">Pilih spare part...</option>
+                                </select>
+                                <div class="form-text">Ketik untuk mencari spare part yang tersedia</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="partCode" class="form-label">
+                                    <i class="fas fa-barcode me-1"></i>
+                                    Kode Part
+                                </label>
+                                <input type="text" class="form-control" id="partCode" name="partCode" placeholder="Kode part (otomatis terisi)" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="currentStock" class="form-label">
+                                    <i class="fas fa-boxes me-1"></i>
+                                    Stok Tersedia
+                                </label>
+                                <input type="text" class="form-control" id="currentStock" name="currentStock" placeholder="Stok saat ini" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity" class="form-label">
+                                    <i class="fas fa-sort-numeric-up me-1"></i>
+                                    Jumlah <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="urgency" class="form-label">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    Tingkat Urgensi <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="urgency" name="urgency" required>
+                                    <option value="">Pilih Urgensi</option>
+                                    <option value="Critical">Critical (< 2 jam)</option>
+                                    <option value="High">High (< 24 jam)</option>
+                                    <option value="Medium">Medium (1-3 hari)</option>
+                                    <option value="Low">Low (> 3 hari)</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="partDescription" class="form-label">
+                                    <i class="fas fa-file-alt me-1"></i>
+                                    Deskripsi & Spesifikasi
+                                </label>
+                                <textarea class="form-control" id="partDescription" name="partDescription" rows="3" placeholder="Jelaskan spesifikasi dan kegunaan spare part..."></textarea>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="justification" class="form-label">
+                                    <i class="fas fa-clipboard-check me-1"></i>
+                                    Justifikasi Permintaan <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" id="justification" name="justification" rows="3" placeholder="Jelaskan mengapa spare part ini dibutuhkan untuk menyelesaikan PBK..." required></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="submitSparePartRequest()">
+                        <i class="fas fa-paper-plane me-2"></i>Send Request to Engineering Store
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery (diperlukan untuk Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom JS -->
+    <script src="assets/js/script.js?v=5wh1h-fallback-ui"></script>
+    
+    <!-- Session Check -->
+    <script>
+    // Check if user is logged in and authorized for Maintenance
+    fetch('auth/check_session.php')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const role = (data.user?.role || '').toLowerCase();
+             const allowed = role === 'admin' || role === 'maintenance';
+             if (!allowed) {
+                 switch (role) {
+                     case 'user':
+                         window.location.href = 'user-production.html';
+                         break;
+                     case 'engineering':
+                         window.location.href = 'engineering-store.html';
+                         break;
+                     default:
+                         window.location.href = 'index.html';
+                         break;
+                 }
+                 return;
+             }
+             const navUserNameEl = document.getElementById('navUserName');
+             if (navUserNameEl) {
+                 const displayName = data.user?.full_name || data.user?.username || 'User';
+                 navUserNameEl.textContent = `${displayName} (${data.user?.role})`;
+             }
+        })
+        .catch(error => {
+            console.error('Session check error:', error);
+            window.location.href = 'login.html';
+        });
+
+    // Initialize Maintenance functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeMaintenance();
+    });
+
+    function initializeMaintenance() {
+        // Load PBK list
+        refreshPBKList();
+        
+        // Initialize spare part dropdown
+        initializeSparePartDropdown();
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchMaintenancePBK');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const tableRows = document.querySelectorAll('#maintenancePBKBody tr');
+                
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+        
+        // Filter functionality
+        const filters = ['statusFilter', 'priorityFilter', 'lineFilter'];
+        filters.forEach(filterId => {
+            const filterElement = document.getElementById(filterId);
+            if (filterElement) {
+                filterElement.addEventListener('change', applyFilters);
+            }
+        });
+    }
+
+    // Ganti fungsi refreshPBKList()
+    function refreshPBKList() {
+        const tbody = document.getElementById('maintenancePBKBody');
+        const emptyState = document.getElementById('emptyMaintenanceState');
+        const table = document.getElementById('maintenanceTable');
+        
+        // Show loading
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin me-2"></i>Loading...</td></tr>';
+        table.style.display = 'block';
+        emptyState.style.display = 'none';
+        
+        // Fetch real PBK data
+        fetch('api/get_pbk_requests.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data.length > 0) {
+                    tbody.innerHTML = data.data.map(pbk => `
+                        <tr>
+                            <td>${pbk.pbk_number}</td>
+                            <td>${new Date(pbk.request_date).toLocaleDateString()}</td>
+                            <td>${pbk.line_name} / ${pbk.machine_name}</td>
+                            <td>${pbk.damage_type}</td>
+                            <td><span class="badge bg-warning">${pbk.priority}</span></td>
+                            <td><span class="badge bg-info">${pbk.status}</span></td>
+                            <td>${pbk.user_name || 'Unknown'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="viewMaintenancePBKDetail(${pbk.id})">View</button>
+                                <button class="btn btn-sm btn-success" onclick="acceptPBK(${pbk.id})">Accept</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    table.style.display = 'block';
+                    emptyState.style.display = 'none';
+                } else {
+                    tbody.innerHTML = '';
+                    table.style.display = 'none';
+                    emptyState.style.display = 'block';
+                }
+                
+                // Update statistics
+                updateMaintenanceStatistics(data.data || []);
+            })
+            .catch(error => {
+                console.error('Error fetching PBK data:', error);
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Error loading data</td></tr>';
+            });
+    }
+
+    function updateMaintenanceStatistics(pbkData) {
+        const pendingCount = pbkData.filter(p => p.status === 'Pending').length;
+        const progressCount = pbkData.filter(p => p.status === 'In Progress').length;
+        const completedCount = pbkData.filter(p => p.status === 'Completed').length;
+        const rejectedCount = pbkData.filter(p => p.status === 'Rejected').length;
+        
+        document.getElementById('pendingCount').textContent = pendingCount;
+        document.getElementById('progressCount').textContent = progressCount;
+        document.getElementById('completedCount').textContent = completedCount;
+        document.getElementById('rejectedCount').textContent = rejectedCount;
+    }
+
+    function applyFilters() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const priorityFilter = document.getElementById('priorityFilter').value;
+        const lineFilter = document.getElementById('lineFilter').value;
+        
+        // Apply filters to table rows
+        const tableRows = document.querySelectorAll('#maintenancePBKBody tr');
+        tableRows.forEach(row => {
+            let showRow = true;
+            
+            if (statusFilter && !row.textContent.includes(statusFilter)) {
+                showRow = false;
+            }
+            if (priorityFilter && !row.textContent.includes(priorityFilter)) {
+                showRow = false;
+            }
+            if (lineFilter && !row.textContent.includes(lineFilter)) {
+                showRow = false;
+            }
+            
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+
+    function rejectPBK() {
+        const rejectModal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
+        rejectModal.show();
+    }
+
+    function confirmRejectPBK() {
+        const reason = document.getElementById('rejectReason').value;
+        const category = document.getElementById('rejectCategory').value;
+        
+        if (!reason.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Alasan penolakan harus diisi'
+            });
+            return;
+        }
+        
+        if (!currentPBKForAction) {
+            Swal.fire('Error', 'Tidak ada PBK yang dipilih', 'error');
+            return;
+        }
+        
+        // Show loading
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Sedang memproses penolakan PBK...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Make API call to reject PBK
+        fetch('api/update_pbk_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                pbk_id: currentPBKForAction.id,
+                status: 'Rejected',
+                action_type: 'reject',
+                reject_reason: reason,
+                reject_category: category
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'PBK Ditolak!',
+                    text: 'PBK berhasil ditolak dengan alasan: ' + reason,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                // Close modals
+                bootstrap.Modal.getInstance(document.getElementById('rejectReasonModal')).hide();
+                bootstrap.Modal.getInstance(document.getElementById('maintenancePBKModal')).hide();
+                
+                // Reset form and current PBK
+                document.getElementById('rejectForm').reset();
+                currentPBKForAction = null;
+                
+                // Refresh list
+                refreshPBKList();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: data.message || 'Gagal menolak PBK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat menolak PBK'
+            });
+        });
+    }
+
+    function initializeSparePartDropdown() {
+        // Initialize Select2 for part name dropdown
+        $('#partName').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Ketik untuk mencari spare part...',
+            allowClear: true,
+            dropdownParent: $('#sparePartModal'),
+            ajax: {
+                url: 'api/get_inventory.php',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    if (data.success) {
+                        return {
+                            results: data.data.map(item => ({
+                                id: item.id,
+                                text: `${item.item_name} (${item.item_code})`,
+                                item_code: item.item_code,
+                                current_stock: item.current_stock,
+                                minimum_stock: item.minimum_stock,
+                                location: item.location,
+                                description: item.description
+                            }))
+                        };
+                    }
+                    return { results: [] };
+                },
+                cache: true
+            }
+        });
+        
+        // Handle selection change
+        $('#partName').on('select2:select', function (e) {
+            const data = e.params.data;
+            document.getElementById('partCode').value = data.item_code || '';
+            document.getElementById('currentStock').value = `${data.current_stock || 0} unit (Min: ${data.minimum_stock || 0})`;
+            
+            // Update quantity max based on available stock
+            const quantityInput = document.getElementById('quantity');
+            quantityInput.max = data.current_stock || 1;
+            
+            // Auto-fill description if empty
+            const descriptionField = document.getElementById('partDescription');
+            if (!descriptionField.value && data.description) {
+                descriptionField.value = data.description;
+            }
+        });
+        
+        // Clear fields when selection is cleared
+        $('#partName').on('select2:clear', function () {
+            document.getElementById('partCode').value = '';
+            document.getElementById('currentStock').value = '';
+            document.getElementById('quantity').max = '';
+        });
+    }
+
+    function requestSparePart() {
+        // Reset form
+        document.getElementById('sparePartForm').reset();
+        $('#partName').val(null).trigger('change');
+        
+        const sparePartModal = new bootstrap.Modal(document.getElementById('sparePartModal'));
+        sparePartModal.show();
+    }
+
+    function submitSparePartRequest() {
+        const partName = $('#partName').select2('data')[0];
+        const partCode = document.getElementById('partCode').value;
+        const quantity = document.getElementById('quantity').value;
+        const urgency = document.getElementById('urgency').value;
+        const partDescription = document.getElementById('partDescription').value;
+        const justification = document.getElementById('justification').value;
+        
+        // Validation
+        if (!partName || !partName.id) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Mohon pilih spare part yang dibutuhkan'
+            });
+            return;
+        }
+        
+        if (!quantity || quantity < 1) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Mohon masukkan jumlah yang valid'
+            });
+            return;
+        }
+        
+        if (!urgency || !justification.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Mohon lengkapi semua field yang wajib diisi'
+            });
+            return;
+        }
+        
+        // Check stock availability
+        const requestedQty = parseInt(quantity);
+        const availableStock = parseInt(partName.current_stock) || 0;
+        
+        if (requestedQty > availableStock) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stok Tidak Mencukupi!',
+                text: `Stok tersedia: ${availableStock} unit, diminta: ${requestedQty} unit`,
+                showCancelButton: true,
+                confirmButtonText: 'Tetap Request',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sendSparePartRequest();
+                }
+            });
+            return;
+        }
+        
+        sendSparePartRequest();
+        
+        function sendSparePartRequest() {
+            // Show loading
+            Swal.fire({
+                title: 'Mengirim Request...',
+                text: 'Sedang memproses permintaan spare part...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Prepare request data
+            const requestData = {
+                inventory_item_id: partName.id,
+                part_name: partName.text.split(' (')[0], // Remove code from display text
+                part_code: partCode,
+                quantity: requestedQty,
+                urgency: urgency,
+                description: partDescription,
+                justification: justification,
+                request_type: 'maintenance_spare_part'
+            };
+            
+            // Send to API
+            fetch('api/submit_spare_part_request.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Request Terkirim!',
+                        text: `Permintaan spare part berhasil dikirim ke Engineering Store dengan nomor: ${data.request_number || 'N/A'}`,
+                        timer: 3000,
+                        showConfirmButton: true
+                    });
+                    
+                    // Close modal and reset form
+                    bootstrap.Modal.getInstance(document.getElementById('sparePartModal')).hide();
+                    document.getElementById('sparePartForm').reset();
+                    $('#partName').val(null).trigger('change');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: data.message || 'Gagal mengirim permintaan spare part'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan saat mengirim permintaan'
+                });
+            });
+        }
+    }
+
+    function approvePBK() {
+        Swal.fire({
+            title: 'Approve PBK?',
+            text: 'Apakah Anda yakin ingin menyetujui dan memulai pekerjaan untuk PBK ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Approve!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'PBK Disetujui!',
+                    text: 'PBK berhasil disetujui dan pekerjaan dimulai',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                // Close modal and refresh
+                bootstrap.Modal.getInstance(document.getElementById('maintenancePBKModal')).hide();
+                refreshPBKList();
+            }
+        });
+    }
+    // Load spare part requests
+    function loadSparePartRequests() {
+        fetch('api/get_spare_part_requests.php?user_only=true')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displaySparePartRequests(data.data);
+                } else {
+                    console.error('Failed to load spare part requests');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading spare part requests:', error);
+            });
+    }
+    
+    function displaySparePartRequests(requests) {
+        const tableBody = document.getElementById('sparePartRequestsTableBody');
+        const noRequestsDiv = document.getElementById('noSparePartRequests');
+        const table = document.getElementById('sparePartRequestsTable');
+        
+        if (requests.length === 0) {
+            table.style.display = 'none';
+            noRequestsDiv.style.display = 'block';
+            return;
+        }
+        
+        table.style.display = 'table';
+        noRequestsDiv.style.display = 'none';
+        
+        tableBody.innerHTML = requests.map(request => {
+            const statusBadge = getSparePartStatusBadge(request.status);
+            const urgencyBadge = getUrgencyBadge(request.urgency);
+            
+            return `
+                <tr>
+                    <td><strong>${request.request_number}</strong></td>
+                    <td>${request.item_name || 'N/A'}</td>
+                    <td><span class="fw-bold">${request.quantity_requested}</span></td>
+                    <td>${urgencyBadge}</td>
+                    <td>${statusBadge}</td>
+                    <td>${new Date(request.created_at).toLocaleDateString('id-ID')}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info" onclick="viewSparePartRequestDetail(${request.id})" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${request.status === 'Approved' ? `
+                            <span class="badge bg-success ms-1">Ready for Pickup</span>
+                        ` : ''}
+                        ${request.status === 'Rejected' ? `
+                            <button class="btn btn-sm btn-outline-warning ms-1" onclick="resubmitSparePartRequest(${request.id})" title="Resubmit">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+    function getSparePartStatusBadge(status) {
+        const statusColors = {
+            'Pending': 'warning',
+            'Approved': 'success',
+            'Rejected': 'danger',
+            'Issued': 'info',
+            'Completed': 'primary'
+        };
+        
+        const color = statusColors[status] || 'secondary';
+        return `<span class="badge bg-${color}">${status}</span>`;
+    }
+    
+    function getUrgencyBadge(urgency) {
+        const urgencyColors = {
+            'Critical': 'danger',
+            'High': 'warning',
+            'Medium': 'info',
+            'Low': 'secondary'
+        };
+        
+        const color = urgencyColors[urgency] || 'secondary';
+        return `<span class="badge bg-${color}">${urgency}</span>`;
+    }
+    
+    function viewSparePartRequestDetail(requestId) {
+        fetch('api/get_spare_part_requests.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const request = data.data.find(r => r.id == requestId);
+                    if (request) {
+                        let detailHtml = `
+                            <div class="text-start">
+                                <p><strong>Request Number:</strong> ${request.request_number}</p>
+                                <p><strong>Item:</strong> ${request.item_name || 'N/A'}</p>
+                                <p><strong>Quantity:</strong> ${request.quantity_requested}</p>
+                                <p><strong>Urgency:</strong> ${getUrgencyBadge(request.urgency)}</p>
+                                <p><strong>Status:</strong> ${getSparePartStatusBadge(request.status)}</p>
+                                <p><strong>Request Date:</strong> ${new Date(request.created_at).toLocaleDateString('id-ID')}</p>
+                                <p><strong>Justification:</strong> ${request.justification || 'N/A'}</p>
+                        `;
+                        
+                        if (request.notes) {
+                            detailHtml += `<p><strong>Notes:</strong> ${request.notes}</p>`;
+                        }
+                        
+                        if (request.approved_date) {
+                            detailHtml += `<p><strong>Approved Date:</strong> ${new Date(request.approved_date).toLocaleDateString('id-ID')}</p>`;
+                        }
+                        
+                        if (request.issued_date) {
+                            detailHtml += `<p><strong>Issued Date:</strong> ${new Date(request.issued_date).toLocaleDateString('id-ID')}</p>`;
+                        }
+                        
+                        detailHtml += `</div>`;
+                        
+                        Swal.fire({
+                            title: 'Spare Part Request Details',
+                            html: detailHtml,
+                            width: '600px',
+                            confirmButtonText: 'Close'
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Failed to load request details', 'error');
+            });
+    }
+    
+    function refreshSparePartRequests() {
+        loadSparePartRequests();
+        Swal.fire({
+            icon: 'success',
+            title: 'Refreshed!',
+            text: 'Spare part requests data updated',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }
+    
+    // Load spare part requests when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSparePartRequests();
+        
+        // Auto refresh every 30 seconds
+        setInterval(loadSparePartRequests, 30000);
+    });
+    // Override viewMaintenancePBKDetail with robust 5W1H fallback
+    function viewMaintenancePBKDetail(pbkId) {
+        fetch('api/get_pbk_requests.php')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    Swal.fire('Error', 'Gagal memuat data PBK', 'error');
+                    return;
+                }
+                const pbk = data.data.find(p => p.id == pbkId || p.pbk_number == pbkId);
+                if (!pbk) {
+                    Swal.fire('Error', 'PBK tidak ditemukan', 'error');
+                    return;
+                }
+
+                // Simpan untuk aksi approve/reject
+                window.currentPBKForAction = pbk;
+                try { currentPBKForAction = pbk; } catch (e) { /* ignore if not defined yet */ }
+
+                // Fallback 5W1H di UI
+                const whatVal = (pbk.what_problem && pbk.what_problem.trim()) ? pbk.what_problem : (pbk.problem_description || '-');
+                const whereVal = (pbk.where_location && pbk.where_location.trim()) ? pbk.where_location : (pbk.line_name || '-');
+                const whoVal = (pbk.who_reported && pbk.who_reported.trim()) ? pbk.who_reported : (pbk.user_name || pbk.created_by_username || pbk.created_by || '-');
+                const whichVal = (pbk.which_component && pbk.which_component.trim()) ? pbk.which_component : (pbk.machine_name || '-');
+                const howVal = (pbk.how_happened && pbk.how_happened.trim()) ? pbk.how_happened : '-';
+
+                // Cek spare part requests terkait PBK
+                fetch(`api/get_spare_part_requests.php?pbk_id=${pbk.id}`)
+                    .then(r => r.json())
+                    .then(sp => {
+                        let spareHtml = '';
+                        let hasActiveRequest = false;
+                        if (sp.success && Array.isArray(sp.data) && sp.data.length > 0) {
+                            hasActiveRequest = sp.data.some(req => ['Pending', 'Approved', 'Issued'].includes(req.status));
+                            spareHtml = `
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <h6><i class="fas fa-shopping-cart me-2"></i>Spare Part Requests</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Request Number</th>
+                                                        <th>Item</th>
+                                                        <th>Qty</th>
+                                                        <th>Urgency</th>
+                                                        <th>Status</th>
+                                                        <th>Request Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${sp.data.map(req => `
+                                                        <tr>
+                                                            <td><strong>${req.request_number}</strong></td>
+                                                            <td>${req.item_name || 'N/A'}</td>
+                                                            <td>${req.quantity_requested}</td>
+                                                            <td><span class="badge bg-${getUrgencyColor(req.urgency)}">${req.urgency}</span></td>
+                                                            <td><span class="badge bg-${getStatusColor(req.status)}">${req.status}</span></td>
+                                                            <td>${new Date(req.created_at).toLocaleDateString('id-ID')}</td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        const modalContent = document.getElementById('maintenancePBKContent');
+                        modalContent.innerHTML = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Informasi Dasar</h6>
+                                    <table class="table table-sm">
+                                        <tr><td><strong>PBK Number:</strong></td><td>${pbk.pbk_number}</td></tr>
+                                        <tr><td><strong>Tanggal Submit:</strong></td><td>${new Date(pbk.request_date).toLocaleDateString('id-ID')}</td></tr>
+                                        <tr><td><strong>Line:</strong></td><td>${pbk.line_name}</td></tr>
+                                        <tr><td><strong>Mesin:</strong></td><td>${pbk.machine_name}</td></tr>
+                                        <tr><td><strong>Shift:</strong></td><td>${pbk.shift || '-'}</td></tr>
+                                        <tr><td><strong>Jam:</strong></td><td>${pbk.time_reported || '-'}</td></tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Detail Kerusakan</h6>
+                                    <table class="table table-sm">
+                                        <tr><td><strong>Tipe Kerusakan:</strong></td><td>${pbk.damage_type}</td></tr>
+                                        <tr><td><strong>Jenis Pengajuan:</strong></td><td>${pbk.submission_type || pbk.priority || '-'}</td></tr>
+                                        <tr><td><strong>Status:</strong></td><td><span class="badge bg-info">${pbk.status}</span></td></tr>
+                                        <tr><td><strong>What:</strong></td><td>${whatVal}</td></tr>
+                                        <tr><td><strong>When:</strong></td><td>${pbk.when_occurred || '-'}</td></tr>
+                                        <tr><td><strong>Where:</strong></td><td>${whereVal}</td></tr>
+                                        <tr><td><strong>Who:</strong></td><td>${whoVal}</td></tr>
+                                        <tr><td><strong>Which:</strong></td><td>${whichVal}</td></tr>
+                                        <tr><td><strong>How:</strong></td><td>${howVal}</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h6>Deskripsi Problem</h6>
+                                    <p class="border p-2">${pbk.problem_description || '-'}</p>
+                                </div>
+                            </div>
+                            ${spareHtml}
+                        `;
+
+                        const rejectBtn = document.getElementById('rejectPBKBtn');
+                        const approveBtn = document.getElementById('approvePBKBtn');
+                        const sparePartBtn = document.getElementById('requestSparePartBtn');
+                        const completeBtn = document.getElementById('completePBKBtn');
+
+                        if (pbk.status === 'Pending') {
+                            rejectBtn.style.display = 'inline-block';
+                            approveBtn.style.display = 'inline-block';
+                            sparePartBtn.style.display = hasActiveRequest ? 'none' : 'inline-block';
+                            if (completeBtn) completeBtn.style.display = 'none';
+                        } else {
+                            rejectBtn.style.display = 'none';
+                            approveBtn.style.display = 'none';
+                            sparePartBtn.style.display = (pbk.status === 'In Progress' && !hasActiveRequest) ? 'inline-block' : 'none';
+                            if (completeBtn) completeBtn.style.display = (pbk.status === 'In Progress') ? 'inline-block' : 'none';
+                        }
+
+                        if (hasActiveRequest) {
+                            sparePartBtn.innerHTML = '<i class="fas fa-check me-2"></i>Spare Part Requested';
+                            sparePartBtn.classList.remove('btn-warning');
+                            sparePartBtn.classList.add('btn-success');
+                        } else {
+                            sparePartBtn.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Request Spare Part';
+                            sparePartBtn.classList.remove('btn-success');
+                            sparePartBtn.classList.add('btn-warning');
+                        }
+
+                        const modal = new bootstrap.Modal(document.getElementById('maintenancePBKModal'));
+                        modal.show();
+                    })
+                    .catch(err => {
+                        console.error('Error fetching spare part requests:', err);
+                        // Tampilkan modal tanpa tabel spare part
+                        const modalContent = document.getElementById('maintenancePBKContent');
+                        modalContent.innerHTML = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Informasi Dasar</h6>
+                                    <table class="table table-sm">
+                                        <tr><td><strong>PBK Number:</strong></td><td>${pbk.pbk_number}</td></tr>
+                                        <tr><td><strong>Tanggal Submit:</strong></td><td>${new Date(pbk.request_date).toLocaleDateString('id-ID')}</td></tr>
+                                        <tr><td><strong>Line:</strong></td><td>${pbk.line_name}</td></tr>
+                                        <tr><td><strong>Mesin:</strong></td><td>${pbk.machine_name}</td></tr>
+                                        <tr><td><strong>Shift:</strong></td><td>${pbk.shift || '-'}</td></tr>
+                                        <tr><td><strong>Jam:</strong></td><td>${pbk.time_reported || '-'}</td></tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Detail Kerusakan</h6>
+                                    <table class="table table-sm">
+                                        <tr><td><strong>Tipe Kerusakan:</strong></td><td>${pbk.damage_type}</td></tr>
+                                        <tr><td><strong>Jenis Pengajuan:</strong></td><td>${pbk.submission_type || pbk.priority || '-'}</td></tr>
+                                        <tr><td><strong>Status:</strong></td><td><span class="badge bg-info">${pbk.status}</span></td></tr>
+                                        <tr><td><strong>What:</strong></td><td>${whatVal}</td></tr>
+                                        <tr><td><strong>When:</strong></td><td>${pbk.when_occurred || '-'}</td></tr>
+                                        <tr><td><strong>Where:</strong></td><td>${whereVal}</td></tr>
+                                        <tr><td><strong>Who:</strong></td><td>${whoVal}</td></tr>
+                                        <tr><td><strong>Which:</strong></td><td>${whichVal}</td></tr>
+                                        <tr><td><strong>How:</strong></td><td>${howVal}</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h6>Deskripsi Problem</h6>
+                                    <p class="border p-2">${pbk.problem_description || '-'}</p>
+                                </div>
+                            </div>
+                        `;
+                        const modal = new bootstrap.Modal(document.getElementById('maintenancePBKModal'));
+                        modal.show();
+                    });
+            })
+            .catch(err => {
+                console.error('Error fetching PBK detail:', err);
+                Swal.fire('Error', 'Gagal memuat detail PBK', 'error');
+            });
+    }
+</script>
+</body>
+</html>
